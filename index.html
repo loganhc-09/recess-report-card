@@ -182,6 +182,8 @@
   .rank span { display: block; font-size: 18px; margin-top: 1px; }
   .rank.tl { top: 18px; left: 18px; }
   .rank.br { bottom: 18px; right: 18px; transform: rotate(180deg); }
+  /* keep card content above the absolutely-positioned foil ::before layer */
+  .pcard .emblem, .pcard .grade-name, .pcard .nickname { position: relative; z-index: 1; }
   .pcard .emblem { font-size: 64px; line-height: 1; margin-bottom: 8px; }
   .pcard .grade-name {
     font-family: var(--display); font-weight: 800; font-size: 30px; letter-spacing: -.01em;
