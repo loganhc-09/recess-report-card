@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What grade are you in? · AI Recess</title>
+<meta name="description" content="A 60-second report card for where you actually are with AI. No syllabus, no shame, one move to climb a rung.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Gochi+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF3E3;
+    --paper-deep: #F2E7CE;
+    --ink: #221E16;
+    --ink-soft: #5C5546;
+    --kickball: #E04A2F;
+    --chalk-blue: #3A6EA5;
+    --marker-yellow: #F5B82E;
+    --grass: #4A8C5C;
+    --foil-a: #8E7CC3;
+    --foil-b: #E0A33C;
+    --line: rgba(34,30,22,.16);
+    --shadow: 0 10px 30px rgba(34,30,22,.12), 0 2px 6px rgba(34,30,22,.08);
+    --display: "Bricolage Grotesque", sans-serif;
+    --marker: "Gochi Hand", cursive;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--display);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* subtle paper grain */
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(245,184,46,.07), transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(58,110,165,.06), transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 22px 100px; }
+
+  /* ---------- chalk doodles in margins ---------- */
+  .doodle {
+    position: fixed; font-family: var(--marker); color: var(--ink);
+    opacity: .12; pointer-events: none; user-select: none; z-index: 0;
+  }
+  .doodle.d1 { top: 8%; left: 3%; font-size: 28px; transform: rotate(-12deg); }
+  .doodle.d2 { bottom: 12%; right: 4%; font-size: 24px; transform: rotate(8deg); }
+
+  /* ---------- header ---------- */
+  header { position: relative; z-index: 1; text-align: center; margin-bottom: 36px; }
+  .brand {
+    display: inline-block; font-family: var(--marker); font-size: 18px;
+    color: var(--kickball); letter-spacing: .5px;
+    border: 2px solid var(--kickball); border-radius: 999px;
+    padding: 4px 16px; transform: rotate(-2deg);
+    animation: drop-in .5s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  h1 {
+    font-size: clamp(40px, 8vw, 64px); font-weight: 800; line-height: 1.02;
+    letter-spacing: -.02em; margin: 20px 0 14px;
+    animation: drop-in .5s .08s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  h1 .scribble { position: relative; white-space: nowrap; }
+  h1 .scribble::after {
+    content: ""; position: absolute; left: -2%; right: -2%; bottom: 2px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 Q 30 2 60 7 T 120 6 T 198 7' stroke='%23E04A2F' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  }
+  .sub {
+    font-size: 18px; color: var(--ink-soft); max-width: 520px; margin: 0 auto;
+    animation: drop-in .5s .16s cubic-bezier(.2,1.4,.4,1) both;
+  }
+
+  @keyframes drop-in {
+    from { opacity: 0; transform: translateY(-14px) rotate(-1deg); }
+    to   { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Logan's opener note ---------- */
+  .note {
+    position: relative; z-index: 1;
+    background: #fff; border: 1px solid var(--line); border-radius: 4px;
+    padding: 22px 24px 18px; margin: 0 auto 44px; max-width: 560px;
+    box-shadow: var(--shadow); transform: rotate(-.6deg);
+    animation: rise-in .5s .26s both;
+  }
+  .note::before { /* tape */
+    content: ""; position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(2deg);
+    width: 110px; height: 26px; background: rgba(245,184,46,.45);
+    border-left: 1px dashed rgba(34,30,22,.2); border-right: 1px dashed rgba(34,30,22,.2);
+  }
+  .note p { font-size: 16.5px; line-height: 1.55; }
+  .note .sig { font-family: var(--marker); font-size: 19px; color: var(--chalk-blue); margin-top: 10px; display: block; transform: rotate(-1deg); }
+
+  /* ---------- quiz screens ---------- */
+  .screen { position: relative; z-index: 1; display: none; }
+  .screen.active { display: block; animation: rise-in .4s both; }
+
+  .step-tag {
+    font-family: var(--marker); font-size: 17px; color: var(--ink-soft);
+    margin-bottom: 14px; display: block;
+  }
+  .q {
+    font-size: clamp(24px, 5vw, 32px); font-weight: 700; letter-spacing: -.01em;
+    margin-bottom: 24px; line-height: 1.15;
+  }
+
+  .doors { display: grid; gap: 14px; }
+  .door {
+    text-align: left; background: #fff; border: 2px solid var(--ink);
+    border-radius: 12px; padding: 18px 20px; cursor: pointer;
+    font-family: var(--display); font-size: 18px; font-weight: 600; color: var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .door:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); background: var(--paper-deep); }
+  .door:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .door .glyph {
+    flex: 0 0 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    font-family: var(--marker); font-size: 22px; color: #fff;
+  }
+  .door:nth-child(1) .glyph { background: var(--marker-yellow); }
+  .door:nth-child(2) .glyph { background: var(--kickball); }
+  .door:nth-child(3) .glyph { background: var(--chalk-blue); }
+  .door:nth-child(4) .glyph { background: var(--grass); }
+  .door small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 14.5px; margin-top: 2px; }
+
+  .back-btn {
+    margin-top: 22px; background: none; border: none; cursor: pointer;
+    font-family: var(--marker); font-size: 17px; color: var(--ink-soft);
+  }
+  .back-btn:hover { color: var(--kickball); }
+
+  /* ---------- result ---------- */
+  #result { text-align: center; }
+  .you-are { font-family: var(--marker); font-size: 22px; color: var(--ink-soft); display: block; margin-bottom: 18px; }
+
+  /* the playing card */
+  .card-stage { perspective: 1200px; display: flex; justify-content: center; margin-bottom: 10px; }
+  .pcard {
+    width: 300px; height: 420px; border-radius: 18px; position: relative;
+    transform-style: preserve-3d; animation: card-flip .9s cubic-bezier(.3,1.2,.3,1) both;
+    cursor: pointer;
+  }
+  @keyframes card-flip {
+    0%   { transform: rotateY(180deg) translateY(30px) scale(.85); }
+    100% { transform: rotateY(0) translateY(0) scale(1); }
+  }
+  .pcard:hover { animation: card-wiggle 2.4s ease-in-out infinite; }
+  @keyframes card-wiggle {
+    0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); }
+  }
+  .pcard .face {
+    position: absolute; inset: 0; border-radius: 18px; backface-visibility: hidden;
+    background: #fff; border: 3px solid var(--ink);
+    box-shadow: 8px 10px 0 rgba(34,30,22,.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; overflow: hidden;
+  }
+  .pcard .face::before { /* inner frame */
+    content: ""; position: absolute; inset: 10px; border: 2px solid var(--tier, var(--kickball));
+    border-radius: 12px; pointer-events: none;
+  }
+  .pcard.foil .face::before {
+    border: 2px solid transparent;
+    background: linear-gradient(#fff,#fff) padding-box,
+                linear-gradient(120deg, var(--foil-a), var(--foil-b), var(--foil-a)) border-box;
+  }
+  .rank {
+    position: absolute; font-family: var(--display); font-weight: 800; font-size: 30px;
+    line-height: 1; color: var(--tier, var(--kickball)); text-align: center;
+  }
+  .rank span { display: block; font-size: 18px; margin-top: 1px; }
+  .rank.tl { top: 18px; left: 18px; }
+  .rank.br { bottom: 18px; right: 18px; transform: rotate(180deg); }
+  .pcard .emblem { font-size: 64px; line-height: 1; margin-bottom: 8px; }
+  .pcard .grade-name {
+    font-family: var(--display); font-weight: 800; font-size: 30px; letter-spacing: -.01em;
+  }
+  .pcard .nickname {
+    font-family: var(--marker); font-size: 20px; color: var(--tier, var(--kickball)); margin-top: 4px;
+  }
+  .pcard .card-brand {
+    position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
+    font-family: var(--marker); font-size: 14px; color: var(--ink-soft);
+  }
+  .pcard .holo { /* foil shimmer for 7th-8th */
+    display: none; position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(142,124,195,.18) 45%, rgba(224,163,60,.2) 55%, transparent 70%);
+    background-size: 250% 250%; animation: holo 3.2s linear infinite; border-radius: 18px;
+  }
+  .pcard.foil .holo { display: block; }
+  @keyframes holo { 0% { background-position: 100% 0; } 100% { background-position: 0 100%; } }
+
+  .card-hint { font-family: var(--marker); font-size: 15px; color: var(--ink-soft); margin-bottom: 28px; }
+
+  .mirror {
+    font-size: 19px; line-height: 1.5; max-width: 520px; margin: 0 auto 8px; font-weight: 500;
+  }
+  .not-a-race {
+    font-size: 15.5px; color: var(--ink-soft); max-width: 500px; margin: 0 auto 36px; line-height: 1.5;
+  }
+
+  .block {
+    text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 22px 24px; margin: 0 auto 18px; max-width: 560px; box-shadow: var(--shadow);
+  }
+  .block h3 {
+    font-family: var(--marker); font-size: 20px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .block h3 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .block p { font-size: 16.5px; line-height: 1.55; }
+  .block .res-link { font-size: 15px; color: var(--chalk-blue); margin-top: 8px; display: block; }
+  .block .channel {
+    display: inline-block; background: var(--paper-deep); border-radius: 6px;
+    padding: 2px 8px; font-weight: 600; font-size: 15px;
+  }
+  .block .badge-line { margin-top: 10px; font-size: 15px; color: var(--ink-soft); }
+
+  /* ---------- the ladder ---------- */
+  .ladder { margin: 30px auto 18px; max-width: 560px; text-align: left; }
+  .ladder h3 { font-family: var(--marker); font-size: 20px; margin-bottom: 14px; text-align: center; }
+  .rungs { display: flex; flex-direction: column-reverse; gap: 6px; }
+  .rung {
+    display: flex; align-items: center; gap: 12px;
+    border-radius: 10px; padding: 10px 14px; font-size: 15px;
+  }
+  .rung .num { font-weight: 800; width: 34px; flex-shrink: 0; text-align: center; font-size: 16px; }
+  .rung.dim { opacity: .28; filter: blur(.6px); }
+  .rung.dim .label { visibility: hidden; }
+  .rung.you { background: var(--ink); color: var(--paper); box-shadow: 4px 4px 0 rgba(34,30,22,.25); transform: scale(1.02); }
+  .rung.you .tag { font-family: var(--marker); color: var(--marker-yellow); margin-left: auto; font-size: 16px; flex-shrink: 0; }
+  .rung.next { background: #fff; border: 2px dashed var(--kickball); }
+  .rung.next .tag { font-family: var(--marker); color: var(--kickball); margin-left: auto; font-size: 15px; flex-shrink: 0; }
+
+  /* ---------- share + next steps ---------- */
+  .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 30px 0 14px; }
+  .btn {
+    font-family: var(--display); font-weight: 700; font-size: 16px;
+    border: 2px solid var(--ink); border-radius: 10px; padding: 13px 22px; cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink); transition: transform .12s, box-shadow .12s;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn.primary { background: var(--kickball); color: #fff; }
+  .btn.secondary { background: #fff; color: var(--ink); }
+  .retake { font-family: var(--marker); font-size: 16px; color: var(--ink-soft); background: none; border: none; cursor: pointer; }
+  .retake:hover { color: var(--kickball); }
+
+  .next-steps {
+    margin: 36px auto 0; max-width: 560px; text-align: center;
+    border-top: 2px dashed var(--line); padding-top: 30px;
+  }
+  .next-steps p { font-size: 17px; line-height: 1.55; max-width: 480px; margin: 0 auto 18px; }
+
+  footer {
+    position: relative; z-index: 1; text-align: center; margin-top: 70px;
+    font-size: 13.5px; color: var(--ink-soft);
+  }
+
+  @media (max-width: 520px) {
+    .wrap { padding-top: 34px; }
+    .pcard { width: 260px; height: 366px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doodle d1">no wrong answers ↓</div>
+<div class="doodle d2">recess &gt; class</div>
+
+<div class="wrap">
+
+  <header>
+    <span class="brand">AI Recess</span>
+    <h1>What <span class="scribble">grade</span> are you in?</h1>
+    <p class="sub">A 60-second report card for where you actually are with AI. No syllabus, no shame. You get one move, not a reading list.</p>
+  </header>
+
+  <div class="note">
+    <p>"Real talk. I'm deep in this. I build with AI every day. And I still feel some mix of confused, overwhelmed, and kind of stupid about a third of the time. That doesn't go away when you 'catch up.' It's the actual texture of doing this. So if you feel behind, you're not behind. You're just in it, same as me."</p>
+    <span class="sig">— Logan</span>
+  </div>
+
+  <!-- Q1: the four doors -->
+  <section class="screen active" id="q1">
+    <span class="step-tag">question 1 of 2</span>
+    <h2 class="q">What does AI feel like for you right now? Pick the one that sounds like you.</h2>
+    <div class="doors">
+      <button class="door" data-door="0">
+        <span class="glyph">?</span>
+        <span>I open it sometimes and stare<small>Or I ask it stuff when I'm stuck. That's about it so far.</small></span>
+      </button>
+      <button class="door" data-door="1">
+        <span class="glyph">!</span>
+        <span>I've gotten it to do real work<small>Drafts, research, plans. Things I actually use.</small></span>
+      </button>
+      <button class="door" data-door="2">
+        <span class="glyph">⚙</span>
+        <span>I've got systems running<small>Repeatable workflows. Some run without me.</small></span>
+      </button>
+      <button class="door" data-door="3">
+        <span class="glyph">★</span>
+        <span>I'm running multiple agents<small>Different jobs, different lanes. I'm the manager.</small></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Q2: split within the door -->
+  <section class="screen" id="q2">
+    <span class="step-tag">question 2 of 2</span>
+    <h2 class="q" id="q2-text"></h2>
+    <div class="doors" id="q2-options"></div>
+    <button class="back-btn" id="back-to-q1">← wait, go back</button>
+  </section>
+
+  <!-- result -->
+  <section class="screen" id="result">
+    <span class="you-are">the verdict is in...</span>
+
+    <div class="card-stage">
+      <div class="pcard" id="pcard">
+        <div class="face">
+          <div class="rank tl"><span id="rank-top"></span></div>
+          <div class="rank br"><span id="rank-bottom"></span></div>
+          <div class="emblem" id="card-emblem"></div>
+          <div class="grade-name" id="card-grade"></div>
+          <div class="nickname" id="card-nickname"></div>
+          <div class="card-brand">AI RECESS · report card</div>
+        </div>
+        <div class="holo"></div>
+      </div>
+    </div>
+    <p class="card-hint">that's your card. save it, post it, claim your badge.</p>
+
+    <p class="mirror" id="mirror"></p>
+    <p class="not-a-race">And hey: nobody needs to be an 8th grader orchestrating agents all day. The ladder isn't a race to the top. It's about grabbing the rung that buys your time back. Some of the happiest people we know live in 4th grade on purpose.</p>
+
+    <div class="block">
+      <h3><span class="dot" style="background:var(--kickball)"></span>Your one move</h3>
+      <p id="one-move"></p>
+      <span class="res-link" id="one-resource"></span>
+    </div>
+
+    <div class="block">
+      <h3><span class="dot" style="background:var(--chalk-blue)"></span>How you actually move up</h3>
+      <p id="grad-move"></p>
+      <p class="badge-line" id="badge-line"></p>
+    </div>
+
+    <div class="ladder">
+      <h3>the ladder (you only need to see two rungs)</h3>
+      <div class="rungs" id="rungs"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="download-card">Save my card</button>
+      <button class="btn secondary" id="copy-share">Copy my brag</button>
+    </div>
+    <button class="retake" id="retake">↻ take it again</button>
+
+    <div class="next-steps">
+      <p><strong>Recess is where you graduate.</strong> The card hands you the quest. Doing it in the room is what moves you up a grade. Post your card in the Discord and we'll hand you your grade badge. It sits next to your name until you outgrow it.</p>
+      <a class="btn primary" style="text-decoration:none; display:inline-block" href="#" id="join-link">I'm in, take me to recess</a>
+    </div>
+  </section>
+
+  <footer>
+    Built by three people who are also figuring it out. Grades borrowed lovingly from <a href="https://every.to/guides/the-eight-levels-of-ai-adoption" style="color:var(--chalk-blue)">Every's eight levels</a>, then sent outside to play.
+  </footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Grade data. Each of Every's 8 levels = a grade. The portfolio-career
+// question gets asked at every rung: "is AI buying you time across your hats?"
+// ---------------------------------------------------------------------------
+const GRADES = [
+  {
+    rank: "1st", emblem: "🎒", nickname: "The New Kid", tier: "#F5B82E",
+    mirror: "You showed up. That genuinely puts you ahead of most people, who are still pretending this isn't happening.",
+    oneMove: "Pick the one hat that eats your week — the newsletter, the client emails, the kid logistics. Ask AI to do one piece of it today. Badly is fine. Badly is the assignment.",
+    resource: "▶ 2-min video: your first real prompt (coming from the call archive)",
+    gradMove: "Do that one thing, then post what happened in",
+    channel: "🔎-show-and-tell",
+    q2: "I ask it questions when I'm stuck, and that's about it."
+  },
+  {
+    rank: "2nd", emblem: "✏️", nickname: "The Sandbox Regular", tier: "#F5B82E",
+    mirror: "You're past the staring phase. It's open next to your work. Most people never get here.",
+    oneMove: "Take one thing you do every single week and hand the whole first draft to AI. Same task, every week, until it's boring.",
+    resource: "▶ 2-min video: the weekly-task handoff (coming from the call archive)",
+    gradMove: "Automate one thing you do every week. Post what you made in",
+    channel: "🔎-show-and-tell",
+    q2: "It's open next to my work and I bug it all day."
+  },
+  {
+    rank: "3rd", emblem: "⚽", nickname: "The Kickball Starter", tier: "#E04A2F",
+    mirror: "AI does real work for you. Read that again. Most people are still asking it for recipe ideas.",
+    oneMove: "Pick a task from your side thing, not your main gig. Hand the entire thing to an agent and walk away. Review the result, not the process.",
+    resource: "▶ 3-min video: letting go of the keyboard (coming from the call archive)",
+    gradMove: "Hand a whole task to an agent and let it run. Drop the result (or the wreckage) in",
+    channel: "🩹-broken-things",
+    q2: "I hand it tasks but I check everything it does."
+  },
+  {
+    rank: "4th", emblem: "🛴", nickname: "The Foursquare Captain", tier: "#E04A2F",
+    mirror: "You let it run without babysitting every keystroke. That's a trust shift most people never make.",
+    oneMove: "Take the task you already trust it with and make it repeatable: same steps, runs the same way every time, no re-explaining it from scratch.",
+    resource: "▶ 3-min video: from one-off to workflow (coming from the call archive)",
+    gradMove: "Turn your trusted task into a repeatable workflow. Show it off in",
+    channel: "🛠️-building-blocks",
+    q2: "I let it run a whole job and just review the result."
+  },
+  {
+    rank: "5th", emblem: "🧃", nickname: "The Monkey Bar Veteran", tier: "#3A6EA5",
+    mirror: "You built a system. Not a prompt, a system. That's rare air and you should say it out loud more.",
+    oneMove: "Pick your second income stream's most annoying admin (invoices, scheduling, follow-ups) and put it on autopilot, so you can be present for stream #1.",
+    resource: "▶ 4-min video: autopilot for your second hat (coming from the call archive)",
+    gradMove: "Put the admin of a second income stream on autopilot. Post the before/after in",
+    channel: "🛠️-building-blocks",
+    q2: "I built workflows that run the same way every time."
+  },
+  {
+    rank: "6th", emblem: "📣", nickname: "The Double Dutch Operator", tier: "#3A6EA5",
+    mirror: "Your AI works while you sleep. Most people's AI is a browser tab they forgot about.",
+    oneMove: "Give your setup a second teammate: one more agent, its own job, its own lane. You stop being the bottleneck between your own systems.",
+    resource: "▶ 4-min video: hiring your second agent (coming from the call archive)",
+    gradMove: "Add a second agent with its own job. Introduce the team in",
+    channel: "🔎-show-and-tell",
+    q2: "It pings me with stuff before I even ask."
+  },
+  {
+    rank: "7th", emblem: "🏆", nickname: "The Playground Legend", tier: "#8E7CC3",
+    mirror: "You're managing a team that doesn't eat lunch. Honestly, come teach us something.",
+    oneMove: "Stop assigning tasks. Set a goal, let the system pick the route, and only step in when it asks for you.",
+    resource: "▶ 5-min video: goals, not tasks (coming from the call archive)",
+    gradMove: "Run one goal end-to-end without touching the route. Wreckage welcome in",
+    channel: "🩹-broken-things",
+    q2: "A few agents, different jobs. I'm the manager."
+  },
+  {
+    rank: "8th", emblem: "🔔", nickname: "The Bell Ringer", tier: "#8E7CC3",
+    mirror: "You set goals and the machine routes the work. You're the one this group quietly studies.",
+    oneMove: "You're ahead. Pick a grade and go help someone in it. Teaching is the entire 8th grade curriculum.",
+    resource: "▶ Start here: someone just asked your old question in the Discord",
+    gradMove: "Adopt a grade. Answer one question this week in",
+    channel: "◼️-new-kids-on-the-blacktop",
+    q2: "I set the goal and the system figures out the rest."
+  }
+];
+
+// Door → the two grades it splits into
+const DOORS = [
+  { grades: [0, 1], q: "Okay, staring is a real phase. Which one's closer?" },
+  { grades: [2, 3], q: "Nice. Real work is the line most people never cross. Which one's you?" },
+  { grades: [4, 5], q: "Systems person. Respect. How automatic are we talking?" },
+  { grades: [6, 7], q: "Look at you. Last one — who's actually in charge over there?" }
+];
+
+const JOIN_URL = "https://www.airecess.com"; // TODO: swap for the LaunchPass link
+const SHARE_URL = "https://www.airecess.com/grade"; // TODO: final home of this page
+
+let currentDoor = null;
+let currentGrade = null;
+
+const $ = (id) => document.getElementById(id);
+const show = (id) => {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+// Q1 → Q2
+document.querySelectorAll("#q1 .door").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentDoor = parseInt(btn.dataset.door);
+    const door = DOORS[currentDoor];
+    $("q2-text").textContent = door.q;
+    $("q2-options").innerHTML = door.grades.map((g, i) =>
+      `<button class="door" data-grade="${g}">
+         <span class="glyph">${i === 0 ? "a" : "b"}</span>
+         <span>${GRADES[g].q2}</span>
+       </button>`
+    ).join("");
+    $("q2-options").querySelectorAll(".door").forEach(b => {
+      b.addEventListener("click", () => reveal(parseInt(b.dataset.grade)));
+    });
+    show("q2");
+  });
+});
+
+$("back-to-q1").addEventListener("click", () => show("q1"));
+$("retake").addEventListener("click", () => { currentDoor = null; currentGrade = null; show("q1"); });
+
+function reveal(g) {
+  currentGrade = g;
+  const grade = GRADES[g];
+  const card = $("pcard");
+
+  card.style.setProperty("--tier", grade.tier);
+  card.classList.toggle("foil", g >= 6);
+  // restart flip animation
+  card.style.animation = "none"; void card.offsetWidth; card.style.animation = "";
+
+  $("rank-top").innerHTML = grade.rank;
+  $("rank-bottom").innerHTML = grade.rank;
+  $("card-emblem").textContent = grade.emblem;
+  $("card-grade").textContent = grade.rank + " Grade";
+  $("card-nickname").textContent = grade.nickname;
+  $("mirror").textContent = grade.mirror;
+  $("one-move").textContent = grade.oneMove;
+  $("one-resource").textContent = grade.resource;
+  $("grad-move").innerHTML = `${grade.gradMove} <span class="channel">${grade.channel}</span>.`;
+  $("badge-line").textContent = `Post your card there and we'll hand you the "${grade.rank} Grader" badge in the Discord. Wear it with pride, or out-build it.`;
+  $("join-link").href = JOIN_URL;
+
+  buildLadder(g);
+  show("result");
+}
+
+// The ladder: every rung exists, but only YOU and NEXT are readable.
+// Rule from the brief: show the grade they're in and one grade up. Never the whole ladder.
+function buildLadder(g) {
+  const rungs = $("rungs");
+  rungs.innerHTML = "";
+  GRADES.forEach((grade, i) => {
+    const div = document.createElement("div");
+    let cls = "rung dim", inner = `<span class="num">${grade.rank}</span><span class="label">·····</span>`;
+    if (i === g) {
+      cls = "rung you";
+      inner = `<span class="num">${grade.rank}</span><span>${grade.nickname}</span><span class="tag">← you</span>`;
+    } else if (i === g + 1) {
+      cls = "rung next";
+      inner = `<span class="num">${grade.rank}</span><span>${grade.nickname} · one quest away</span><span class="tag">next rung</span>`;
+    }
+    div.className = cls;
+    div.innerHTML = inner;
+    rungs.appendChild(div);
+  });
+  if (g === 7) { // 8th graders: no next rung, the ladder points back down
+    const note = document.createElement("div");
+    note.className = "rung next";
+    note.innerHTML = `<span class="num">↓</span><span>the next rung is helping someone below you climb</span><span class="tag">for real</span>`;
+    rungs.prepend(note);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Share card: canvas-rendered PNG download (1000x1400, story-friendly)
+// ---------------------------------------------------------------------------
+$("download-card").addEventListener("click", () => {
+  const grade = GRADES[currentGrade];
+  const W = 1000, H = 1400;
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+
+  // paper background
+  x.fillStyle = "#FAF3E3"; x.fillRect(0, 0, W, H);
+
+  // card body
+  const pad = 70;
+  roundRect(x, pad, pad, W - pad * 2, H - pad * 2, 40);
+  x.fillStyle = "#FFFFFF"; x.fill();
+  x.lineWidth = 10; x.strokeStyle = "#221E16"; x.stroke();
+
+  // inner tier frame
+  roundRect(x, pad + 28, pad + 28, W - (pad + 28) * 2, H - (pad + 28) * 2, 26);
+  x.lineWidth = 6;
+  if (currentGrade >= 6) {
+    const grad = x.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, "#8E7CC3"); grad.addColorStop(.5, "#E0A33C"); grad.addColorStop(1, "#8E7CC3");
+    x.strokeStyle = grad;
+  } else {
+    x.strokeStyle = grade.tier;
+  }
+  x.stroke();
+
+  // rank corners
+  x.fillStyle = grade.tier;
+  x.font = "800 90px 'Bricolage Grotesque', sans-serif";
+  x.textAlign = "left";  x.fillText(grade.rank, pad + 60, pad + 150);
+  x.save();
+  x.translate(W - pad - 60, H - pad - 150); x.rotate(Math.PI);
+  x.textAlign = "left"; x.fillText(grade.rank, 0, 90);
+  x.restore();
+
+  // emblem
+  x.font = "240px serif"; x.textAlign = "center";
+  x.fillText(grade.emblem, W / 2, 560);
+
+  // headline
+  x.fillStyle = "#221E16";
+  x.font = "800 86px 'Bricolage Grotesque', sans-serif";
+  x.fillText("I'm a Recess", W / 2, 720);
+  x.fillText(grade.rank + " Grader", W / 2, 820);
+
+  // nickname
+  x.fillStyle = grade.tier;
+  x.font = "52px 'Gochi Hand', cursive";
+  x.fillText(grade.nickname, W / 2, 905);
+
+  // mirror line, wrapped
+  x.fillStyle = "#5C5546";
+  x.font = "34px 'Bricolage Grotesque', sans-serif";
+  wrapText(x, grade.mirror, W / 2, 1000, W - 320, 46);
+
+  // footer
+  x.fillStyle = "#221E16";
+  x.font = "44px 'Gochi Hand', cursive";
+  x.fillText("what grade are you in?", W / 2, H - 200);
+  x.fillStyle = "#E04A2F";
+  x.font = "700 36px 'Bricolage Grotesque', sans-serif";
+  x.fillText(SHARE_URL.replace("https://", ""), W / 2, H - 145);
+
+  const a = document.createElement("a");
+  a.download = `recess-${grade.rank.toLowerCase()}-grader.png`;
+  a.href = c.toDataURL("image/png");
+  a.click();
+});
+
+$("copy-share").addEventListener("click", async (e) => {
+  const grade = GRADES[currentGrade];
+  const text = `I'm a Recess ${grade.rank} Grader (${grade.nickname}) 🛝 what grade are you? ${SHARE_URL}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    e.target.textContent = "Copied. Go brag.";
+    setTimeout(() => e.target.textContent = "Copy my brag", 2200);
+  } catch { prompt("Copy this:", text); }
+});
+
+function roundRect(x, px, py, w, h, r) {
+  x.beginPath();
+  x.moveTo(px + r, py);
+  x.arcTo(px + w, py, px + w, py + h, r);
+  x.arcTo(px + w, py + h, px, py + h, r);
+  x.arcTo(px, py + h, px, py, r);
+  x.arcTo(px, py, px + w, py, r);
+  x.closePath();
+}
+
+function wrapText(x, text, cx, y, maxW, lh) {
+  const words = text.split(" ");
+  let line = "";
+  for (const w of words) {
+    const test = line + w + " ";
+    if (x.measureText(test).width > maxW && line) {
+      x.fillText(line.trim(), cx, y); line = w + " "; y += lh;
+    } else line = test;
+  }
+  x.fillText(line.trim(), cx, y);
+}
+</script>
+</body>
+</html>
